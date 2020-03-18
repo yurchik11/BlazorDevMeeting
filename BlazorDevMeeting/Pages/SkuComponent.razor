@@ -47,9 +47,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var url = "https://mars-petcare.inspector-cloud.com/api/v1.5/sku/";
+        var url = "your api url";
 
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", "f995128ab0046a29624642bc6ed4fee359cd8be6");
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", "your token");
         var response = await HttpClient.GetAsync(url);
         var json = await response.Content.ReadAsStringAsync();
 
