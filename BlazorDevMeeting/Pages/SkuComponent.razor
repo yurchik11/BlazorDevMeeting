@@ -1,0 +1,60 @@
+﻿@page "/sku"
+
+@inject HttpClient HttpClient
+@using BlazorDevMeeting.Model
+@using Newtonsoft.Json
+@using System.Net.Http.Headers;
+
+@if (ListOfSku == null)
+{
+    <p>Loading data...</p>
+}
+else
+{
+    var i = 0;
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Id</th>
+                <th scope="col">Image</th>
+                <th scope="col">Name</th>
+                <th scope="col">Size x mm</th>
+                <th scope="col">Size y mm</th>
+                <th scope="col">Size z mm</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (SkuModel skuItem in ListOfSku)
+            {
+                i++;
+                <tr>
+                    <th scope="row">@i</th>
+                    <td>@skuItem.id</td>
+                    <td>@skuItem.image</td>
+                    <td>@skuItem.name</td>
+                    <td>@skuItem.size_x_mm</td>
+                    <td>@skuItem.size_y_mm</td>
+                    <td>@skuItem.size_z_mm</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public List<SkuModel> ListOfSku { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var url = "https://mars-petcare.inspector-cloud.com/api/v1.5/sku/";
+
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", "f995128ab0046a29624642bc6ed4fee359cd8be6");
+        var response = await HttpClient.GetAsync(url);
+        var json = await response.Content.ReadAsStringAsync();
+
+        var data = JsonConvert.DeserializeObject<SkuList>(json);
+
+        ListOfSku = data.results;
+    }
+}

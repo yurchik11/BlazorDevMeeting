@@ -1,0 +1,32 @@
+﻿
+
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th class="text-center" style="width:10%;">Done</th>
+            <th>To do</th>
+        </tr>
+    </thead>
+    <tbody>
+            @foreach(var todoItem in TodoItems)
+            {
+                <TodoItem Text="@todoItem.Text" Done="@todoItem.Done"/>
+            }
+    </tbody>
+</table>
+
+<NewItemEntry OnNewItem="@OnNewItem" />
+
+@code {
+    [Parameter]
+    public IList<Todo> TodoItems { get; set; }
+
+    void OnNewItem(string newItemText)
+    {
+        if(TodoItems != null)
+        {
+            TodoItems.Add(new Todo { Text = newItemText });
+            StateHasChanged();
+        }
+    }
+}

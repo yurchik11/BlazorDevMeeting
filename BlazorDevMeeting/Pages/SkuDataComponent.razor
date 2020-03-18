@@ -1,0 +1,83 @@
+﻿@using BlazorDevMeeting.Services
+
+@page "/skudata"
+
+@inject ISkuDataService SkuDataService
+
+@{ 
+    RenderFragment ColumnHeader(string field, string caption) =>
+    @<th scope="col" @onclick=@(async () => await HeaderClick(field))>
+      @((MarkupString)caption) <SortIndicator Field="@field" SortField="@SortField" Desc="@SortDesc" />
+    </th>;
+}
+
+@if (ListOfSku == null)
+{
+    <p>Loading data...</p>
+}
+else
+{
+    <h5>Showing top 30 sku sorted bt "@SortField"@(SortDesc ? ", descending": "")</h5>
+    var i = 0;
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                @ColumnHeader("id", "Id")
+                @ColumnHeader("image", "Image")
+                @ColumnHeader("name", "Name")
+                @ColumnHeader("size_x_mm", "Size X")
+                @ColumnHeader("size_y_mm", "Size Y")
+                @ColumnHeader("size_z_mm", "Size Z")
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (SkuModel skuItem in ListOfSku)
+            {
+                i++;
+                <tr>
+                    <th scope="row">@i</th>
+                    <td>@skuItem.id</td>
+                    <td>@skuItem.image</td>
+                    <td>@skuItem.name</td>
+                    <td>@skuItem.size_x_mm</td>
+                    <td>@skuItem.size_y_mm</td>
+                    <td>@skuItem.size_z_mm</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public List<SkuModel> ListOfSku { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        ListOfSku = await SkuDataService.GetListOfSku(SortField, SortDesc);
+    }
+
+    string SortField { get; set; } = "id";
+    bool SortDesc { get; set; } = true;
+
+    async Task HeaderClick(string field)
+    {
+        if (field == SortField)
+        {
+            SortDesc = !SortDesc;
+        }
+        else
+        {
+            SortField = field;
+            SortDesc = false;
+        }
+
+        await LoadData();
+    }
+
+}
